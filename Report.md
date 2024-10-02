@@ -1,12 +1,12 @@
 # CSCE 435 Group project
 
-## 0. Group number: 
+## 0. Group number: 4
 
 ## 1. Group members:
-1. First
-2. Second
-3. Third
-4. Fourth
+1. Eliseo Garza
+2. Carlos Moreno
+3. Daniela Martinez
+4. Manuel Estrada
 
 ## 2. Project topic (e.g., parallel sorting algorithms)
 
@@ -24,3 +24,6 @@
 - Input sizes, Input types
 - Strong scaling (same problem size, increase number of processors/nodes)
 - Weak scaling (increase problem size, increase number of processors)
+
+## 3. Team Communication
+For this project, our team will communicate via Messages and Discord.
