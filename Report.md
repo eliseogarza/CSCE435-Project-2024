@@ -46,6 +46,46 @@ Once all processes are finished sorting their sub-arrays, combine/merge them in 
 De-allocate/close MPI communicators and processes
 ```
 
+```
+Bitonic Sort
+
+Helper functions:
+compareAndSwap -
+compare two indices within the given array and sort them based on the direction given (ascending or descending)
+
+bitonicMerge -
+if count > 1:
+    calculate midpoint based on how many elements we are merging
+    for each indice from the low point to mid point:
+        use compareAndSwap on each of two points and give direction
+    call bitonicMerge recursively twice
+
+bitonicSort - 
+    if count > 1:
+        calculate midpoint based on number of elements we are sorting
+        call bitonicSort recursively to sort first half into ascending order
+        call bitonicSort recursively to sort first half into descending order
+        call bitonicMerge and merge the results into either ascending or descending order based on what we want
+
+Main - 
+Initializae MPI
+
+Get ranks and determine # of processes and size of array (randomly generated or taken from another file)
+
+Split up input array based on # of processes
+
+Use MPI_Scatter to distribute array across all processes
+
+Sort using bitonicSort function
+
+Use MPI_Gather to grab the sorted parts back to the root process
+
+if root process:
+    call bitonicMerge once everything has been gathered to create final array
+
+call MPI_Finalize to finish up
+```
+
 
 ### 2c. Evaluation plan - what and how will you measure and compare
 - Input sizes, Input types
