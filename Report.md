@@ -20,6 +20,33 @@
 ### 2b. Pseudocode for each parallel algorithm
 - For MPI programs, include MPI calls you will use to coordinate between processes
 
+```
+Radix Sort
+
+(Sorting each element starting with LSD -> MSD)
+
+Initialize MPI
+
+Get ranks and determine # of processes and size of array (randomly generated or taken from another file)
+
+Split up input array based on # of processes
+
+Use MPI_Broadcast or MPI_Send to send necessary information to each process if needed
+
+// Compute Radix Sort in each sub-array (via counting sort)
+for each digit in element:
+    Find digit frequency and store it in a histogram (in each process)
+    Send histogram using MPI_Send or MPI_Reduce to main/root process
+    Main/root process does calculations on resultant histogram
+    Main/root process sends back new histogram to all processes using MPI_Scatter
+    Each process adjusts data/number distributions accordingly
+
+Once all processes are finished sorting their sub-arrays, combine/merge them in the main/root process
+
+De-allocate/close MPI communicators and processes
+```
+
+
 ### 2c. Evaluation plan - what and how will you measure and compare
 - Input sizes, Input types
 - Strong scaling (same problem size, increase number of processors/nodes)
