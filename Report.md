@@ -88,11 +88,8 @@ call MPI_Finalize to finish up
 
 
 ### 2c. Evaluation plan - what and how will you measure and compare
-- Input sizes, Input types
-- Strong scaling (same problem size, increase number of processors/nodes)
-- Weak scaling (increase problem size, increase number of processors)
 - We will first try our algorithms with input sizes of 2^16, 2^18, 2^20, 2^22, 2^24, 2^26, 2^28.
-- We will then for each one try it with a version/type that is sorted, reversed, and sorted with 1% perturbed.
+- We will then for each one try it with a version/type that is sorted, random, reverse sorted, and sorted with 1% perturbed.
 - For each of the different input arrays, we will increase the processors from 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, and increase the number of nodes accordingly.
 - We will then increase the number of processors from 2, 4, 8, 16, 32, 64, 128, 256, 512, and 1024 for when the input array size increases.
 
