@@ -85,6 +85,41 @@ if root process:
 
 call MPI_Finalize to finish up
 ```
+```
+Merge Sort
+
+MergeSort(A, lower, upper)
+    If lower < upper
+        mid = [(lower+upper)/2]
+        MergeSort(A, lower, upper)
+        MergeSort(A, mid+1, upper)
+        Merge(A, lower, mid, upper)
+
+Merge(A, lower, mid, upper)
+    n_1 = mid - lower + 1
+    n_2 = upper - mid
+    let left[1..n_1 + 1] and right[1..n_2 + 1] be new arrays
+    for i = 1 to n_1
+        left[i] = A[lower + i - 1]
+    for j = 1 to n_2
+        right[j] = A[mid + j]
+    left[n_1 + 1] = infinity
+    right[n_2 + 1] = infinity
+    i = 1
+    j = 1
+    for k = lower to upper
+        if left[i] <= right[j]
+            A[k] = left[i]
+            i = i + 1
+        else A[k] = right[j]
+            j = j + 1
+Main:
+Initialize MPI here (before the algorithms are run)
+Make sure to use MPI Send as arrays are being split (or potentially also MPI Scatter). The root process distributes data, and other processes receive it.
+Run Merge Sort
+While mergesort is running, MPI Recv can be used (or also MPI Gather). The chunks are then by received.
+Once the algorithm is finished, make sure to use MPI Finalize to close down everything
+```
 
 
 ### 2c. Evaluation plan - what and how will you measure and compare
