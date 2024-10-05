@@ -121,7 +121,38 @@ While mergesort is running, MPI Recv can be used (or also MPI Gather). The chunk
 Once the algorithm is finished, make sure to use MPI Finalize to close down everything
 ```
 
+```
+Sample Sort
 
+Initialize MPI 
+- Get ranks and determine # of processes and size of array (randomly generated or taken from another file)
+- Assign a portion of the input data to each processor
+
+Local sort each processors
+Each processor will select equally spaced samples from its sorted local data
+Gather all samples at the master process(MPI_Allgather)
+
+The master process sorts the gathered samples and selects (p-1) global splitters
+if rank == 0:
+    sorted_samples = sort(all_samples)
+    splitters = choose_splitters(sorted_samples, p-1)
+
+Broadcast the splitters to all processes
+MPI_Bcast(splitters, root=0)
+
+Each processes partitions its local data into buckets based on the splitters
+the processors then send the buckets to their corresponding processors
+for i = 0 to p-1:
+    send(buckets[i], to_process=i)
+    receive(bucket_from_i, from_process=i)
+
+Each processor concatenates the data it received from all other processors and then sorts them
+
+Gather sorted data at Master
+
+MPI_Finalize()
+
+```
 ### 2c. Evaluation plan - what and how will you measure and compare
 - We will first try our algorithms with input sizes of 2^16, 2^18, 2^20, 2^22, 2^24, 2^26, 2^28.
 - We will then for each one try it with a version/type that is sorted, random, reverse sorted, and sorted with 1% perturbed.
