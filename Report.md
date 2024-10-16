@@ -163,7 +163,7 @@ MPI_Finalize()
 For this project, our team will communicate via Messages and Discord.
 
 ### 3a. Caliper Instrumentation
-'''
+```
 Bitonic Sort Calltree
 0.460 main
 └─ 0.454 main
@@ -182,10 +182,10 @@ Bitonic Sort Calltree
    │  │     └─ 0.011 MPI_Recv
    │  └─ 0.025 comp_large
    └─ 0.000 correctness_check
-   '''
+   ```
 
    ### 3b. Collect Metadata
-   '''
+   ```
    Bitonic Sort Metadata
    profile	nid	spot.channel	Min time/rank	Max time/rank	Avg time/rank	Total time	Variance time/rank	Min time/rank (exc)	Max time/rank (exc)	Avg time/rank (exc)	Total time (exc)	Calls/rank (min)	Calls/rank (avg)	Calls/rank (max)	Calls/rank (total)	name	algorithm
 node	num_procs	input_size																		
@@ -194,6 +194,5 @@ node	num_procs	input_size
 {'name': 'comm', 'type': 'function'}	16	1048576	3982932162	3.0	regionprofile	0.400463	0.409566	0.402898	6.446360	0.000004	0.361970	0.375348	0.366079	5.857256	3.0	3.0	3.0	48.0	comm	bitonic
 {'name': 'MPI_Init', 'type': 'function'}	16	1048576	3982932162	4.0	regionprofile	0.000027	0.000052	0.000036	0.000578	0.000000	0.000027	0.000052	0.000036	0.000578	1.0	1.0	1.0	16.0	MPI_Init	bitonic
 {'name': 'MPI_Barrier', 'type': 'function'}	16	1048576	3982932162	6.0	regionprofile	0.027029	0.039529	0.035856	0.573696	0.000013	0.027029	0.039529	0.035856	0.573696	2.0	2.0	2.0	32.0	MPI_Barrier	bitonic
-
-   '''
+    ```
 
