@@ -161,3 +161,39 @@ MPI_Finalize()
 
 ## 3. Team Communication
 For this project, our team will communicate via Messages and Discord.
+
+### 3a. Caliper Instrumentation
+'''
+Bitonic Sort Calltree
+0.460 main
+└─ 0.454 main
+   ├─ 0.403 comm
+   │  ├─ 0.000 MPI_Init
+   │  ├─ 0.036 MPI_Barrier
+   │  ├─ 0.000 MPI_Finalize
+   │  ├─ 0.000 MPI_Initialized
+   │  ├─ 0.000 MPI_Finalized
+   │  └─ 0.001 MPI_Comm_dup
+   ├─ 0.001 data_init_runtime
+   ├─ 0.050 comp_large
+   │  ├─ 0.013 comm
+   │  │  └─ 0.013 comm_large
+   │  │     ├─ 0.001 MPI_Send
+   │  │     └─ 0.011 MPI_Recv
+   │  └─ 0.025 comp_large
+   └─ 0.000 correctness_check
+   '''
+
+   ### 3b. Collect Metadata
+   '''
+   Bitonic Sort Metadata
+   profile	nid	spot.channel	Min time/rank	Max time/rank	Avg time/rank	Total time	Variance time/rank	Min time/rank (exc)	Max time/rank (exc)	Avg time/rank (exc)	Total time (exc)	Calls/rank (min)	Calls/rank (avg)	Calls/rank (max)	Calls/rank (total)	name	algorithm
+node	num_procs	input_size																		
+{'name': 'main', 'type': 'function'}	16	1048576	3982932162	1.0	regionprofile	0.457499	0.460546	0.459576	7.353210	0.000001	0.005166	0.005268	0.005196	0.083140	NaN	NaN	NaN	NaN	main	bitonic
+1048576	3982932162	2.0	regionprofile	0.452231	0.455361	0.454379	7.270070	0.000001	0.000179	0.000947	0.000252	0.004035	NaN	NaN	NaN	NaN	main	bitonic
+{'name': 'comm', 'type': 'function'}	16	1048576	3982932162	3.0	regionprofile	0.400463	0.409566	0.402898	6.446360	0.000004	0.361970	0.375348	0.366079	5.857256	3.0	3.0	3.0	48.0	comm	bitonic
+{'name': 'MPI_Init', 'type': 'function'}	16	1048576	3982932162	4.0	regionprofile	0.000027	0.000052	0.000036	0.000578	0.000000	0.000027	0.000052	0.000036	0.000578	1.0	1.0	1.0	16.0	MPI_Init	bitonic
+{'name': 'MPI_Barrier', 'type': 'function'}	16	1048576	3982932162	6.0	regionprofile	0.027029	0.039529	0.035856	0.573696	0.000013	0.027029	0.039529	0.035856	0.573696	2.0	2.0	2.0	32.0	MPI_Barrier	bitonic
+
+   '''
+
