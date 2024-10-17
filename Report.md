@@ -183,7 +183,22 @@ Bitonic Sort Calltree
    │  └─ 0.025 comp_large
    └─ 0.000 correctness_check
    ```
-
+   ```
+   Merge Sort Calltree
+   12.539 main
+    ├─ 0.014 data_init_runtime
+    ├─ 0.436 comm
+    │  └─ 0.434 comm_large
+    │     ├─ 0.432 MPI_Scatter
+    │     └─ 0.003 MPI_Gather
+    ├─ 0.747 comp
+    │  └─ 0.747 comp_large
+    ├─ 0.007 correctness_check
+    ├─ 0.000 MPI_Finalize
+    ├─ 0.000 MPI_Initialized
+    ├─ 0.000 MPI_Finalized
+    └─ 11.333 MPI_Comm_dup
+   ```
    ### 3b. Collect Metadata
    ```
    Bitonic Sort Metadata
@@ -194,5 +209,50 @@ node	num_procs	input_size
 {'name': 'comm', 'type': 'function'}	16	1048576	3982932162	3.0	regionprofile	0.400463	0.409566	0.402898	6.446360	0.000004	0.361970	0.375348	0.366079	5.857256	3.0	3.0	3.0	48.0	comm	bitonic
 {'name': 'MPI_Init', 'type': 'function'}	16	1048576	3982932162	4.0	regionprofile	0.000027	0.000052	0.000036	0.000578	0.000000	0.000027	0.000052	0.000036	0.000578	1.0	1.0	1.0	16.0	MPI_Init	bitonic
 {'name': 'MPI_Barrier', 'type': 'function'}	16	1048576	3982932162	6.0	regionprofile	0.027029	0.039529	0.035856	0.573696	0.000013	0.027029	0.039529	0.035856	0.573696	2.0	2.0	2.0	32.0	MPI_Barrier	bitonic
+    ```
+    ```
+    cali.caliper.version  mpi.world.size  \
+    profile                                           
+    4252203976               2.11.0              32   
+
+                                                 spot.metrics  \
+    profile                                                         
+    4252203976  min#inclusive#sum#time.duration,max#inclusive#...   
+
+           spot.timeseries.metrics  spot.format.version  \
+    profile                                                   
+    4252203976                                            2   
+
+                                                 spot.options  spot.channels  \
+    profile                                                                        
+    4252203976  time.variance,profile.mpi,node.order,region.co...  regionprofile   
+
+           cali.channel spot:node.order         spot:output spot:profile.mpi  \
+    profile                                                                        
+    4252203976         spot            true  p32-a16777216.cali             true   
+
+           spot:region.count spot:time.exclusive spot:time.variance  \
+    profile                                                               
+    4252203976              true                true               true   
+
+            launchdate                                          libraries  \
+    profile                                                                     
+    4252203976  1729130109  [/scratch/group/csce435-f24/Caliper/caliper/li...   
+
+                            cmdline cluster algorithm programming_model  \
+    profile                                                                   
+    4252203976  [./mergesort, 16777216]       c     merge               mpi   
+
+           data_type  size_of_data_type  input_size input_type  num_procs  \
+    profile                                                                     
+    4252203976       int                  4    16777216     Random         32   
+
+           scalability  group_num  \
+    profile                             
+    4252203976      strong          4   
+
+                                        implementation_source  
+    profile                                                        
+    4252203976  ai and online: https://www.christianbaun.de/CG...  
     ```
 
