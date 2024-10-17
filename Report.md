@@ -182,10 +182,10 @@ Bitonic Sort Calltree
    │  │     └─ 0.011 MPI_Recv
    │  └─ 0.025 comp_large
    └─ 0.000 correctness_check
-   ```
-   ```
-   Merge Sort Calltree
-   12.539 main
+```
+```
+Merge Sort Calltree
+12.539 main
     ├─ 0.014 data_init_runtime
     ├─ 0.436 comm
     │  └─ 0.434 comm_large
@@ -198,38 +198,49 @@ Bitonic Sort Calltree
     ├─ 0.000 MPI_Initialized
     ├─ 0.000 MPI_Finalized
     └─ 11.333 MPI_Comm_dup
-   ```
-   ```
-   
-   Sample Sort Calltree
-    1.069 main
-    ├─ 0.000 MPI_Init
-    ├─ 0.055 comp
-    │  ├─ 0.003 data_init
-    │  ├─ 0.022 local_sort
-    │  ├─ 0.000 select_samples
-    │  ├─ 0.000 choose_splitters
-    │  ├─ 0.011 partition_data
-    │  └─ 0.019 final_local_sort
-    ├─ 0.017 comm
-    │  ├─ 0.006 gather_samples
-    │  │  └─ 0.006 MPI_Gather
-    │  ├─ 0.005 broadcast_splitters
-    │  │  └─ 0.005 MPI_Bcast
-    │  ├─ 0.002 send_recv_sizes
-    │  │  └─ 0.002 MPI_Alltoall
-    │  └─ 0.003 send_recv_buckets
-    │     └─ 0.002 MPI_Alltoallv
-    ├─ 0.000 MPI_Finalize
-    ├─ 0.000 MPI_Initialized
-    ├─ 0.000 MPI_Finalized
-    └─ 0.022 MPI_Comm_dup
+```
+```
+Sample Sort Calltree
+1.069 main
+├─ 0.000 MPI_Init
+├─ 0.055 comp
+│  ├─ 0.003 data_init
+│  ├─ 0.022 local_sort
+│  ├─ 0.000 select_samples
+│  ├─ 0.000 choose_splitters
+│  ├─ 0.011 partition_data
+│  └─ 0.019 final_local_sort
+├─ 0.017 comm
+│  ├─ 0.006 gather_samples
+│  │  └─ 0.006 MPI_Gather
+│  ├─ 0.005 broadcast_splitters
+│  │  └─ 0.005 MPI_Bcast
+│  ├─ 0.002 send_recv_sizes
+│  │  └─ 0.002 MPI_Alltoall
+│  └─ 0.003 send_recv_buckets
+│     └─ 0.002 MPI_Alltoallv
+├─ 0.000 MPI_Finalize
+├─ 0.000 MPI_Initialized
+├─ 0.000 MPI_Finalized
+└─ 0.022 MPI_Comm_dup
+```
+```
+Radix Sort Calltree
+23.560 main
+├─ 0.024 data_init_runtime
+├─ 21.451 comm
+│  ├─ 4.207 comm_small
+│  └─ 16.025 comm_large
+├─ 0.005 comp
+│  ├─ 0.001 comp_small
+│  └─ 0.004 comp_large
+└─ 0.130 correctness_check
+```
 
-   ```
-   ### 3b. Collect Metadata
-   ```
-   Bitonic Sort Metadata
-   profile	nid	spot.channel	Min time/rank	Max time/rank	Avg time/rank	Total time	Variance time/rank	Min time/rank (exc)	Max time/rank (exc)	Avg time/rank (exc)	Total time (exc)	Calls/rank (min)	Calls/rank (avg)	Calls/rank (max)	Calls/rank (total)	name	algorithm
+### 3b. Collect Metadata
+```
+Bitonic Sort Metadata
+profile	nid	spot.channel	Min time/rank	Max time/rank	Avg time/rank	Total time	Variance time/rank	Min time/rank (exc)	Max time/rank (exc)	Avg time/rank (exc)	Total time (exc)	Calls/rank (min)	Calls/rank (avg)	Calls/rank (max)	Calls/rank (total)	name	algorithm
 node	num_procs	input_size																		
 {'name': 'main', 'type': 'function'}	16	1048576	3982932162	1.0	regionprofile	0.457499	0.460546	0.459576	7.353210	0.000001	0.005166	0.005268	0.005196	0.083140	NaN	NaN	NaN	NaN	main	bitonic
 1048576	3982932162	2.0	regionprofile	0.452231	0.455361	0.454379	7.270070	0.000001	0.000179	0.000947	0.000252	0.004035	NaN	NaN	NaN	NaN	main	bitonic
@@ -283,8 +294,8 @@ node	num_procs	input_size
     4252203976  ai and online: https://www.christianbaun.de/CG...  
     ```
 
-    ```
-    Sample Sort
+```
+Sample Sort
 
     	nid	spot.channel	Min time/rank	Max time/rank	Avg time/rank	Total time	Variance time/rank	Min time/rank (exc)	Max time/rank (exc)	Avg time/rank (exc)	Total time (exc)	Calls/rank (min)	Calls/rank (avg)	Calls/rank (max)	Calls/rank (total)	name	num_procs
 node	profile																	
@@ -295,4 +306,9 @@ node	profile
 {'name': 'local_sort', 'type': 'function'}	2092793214	5.0	regionprofile	0.022239	0.022707	0.022332	0.357317	0.000000	0.022239	0.022707	0.022332	0.357317	1.0	1.0	1.0	16.0	local_sort	16
 
 
-    ```
+```
+
+Radix Sort Metadata:
+cali.caliper.version	mpi.world.size	spot.metrics	spot.timeseries.metrics	spot.format.version	spot.options	spot.channels	cali.channel	spot:node.order	spot:output	spot:region.count	spot:time.exclusive	launchdate	libraries	cmdline	cluster	algorithm	programming_model	data_type	size_of_data_type	input_size	input_type	num_procs	scalability	group_num	implementation_source
+profile																										
+3307806477	2.11.0	32	min#inclusive#sum#time.duration,max#inclusive#...		2	node.order,region.count,time.exclusive	regionprofile	spot	true	32-1048576.cali	true	true	1729135233	[/scratch/group/csce435-f24/Caliper/caliper/li...	[./radix_sort, 1048576]	c	radix	mpi	int	4 bytes	1048576	random	32	strong	4	online
