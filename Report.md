@@ -199,6 +199,33 @@ Bitonic Sort Calltree
     ├─ 0.000 MPI_Finalized
     └─ 11.333 MPI_Comm_dup
    ```
+   ```
+   
+   Sample Sort Calltree
+    1.069 main
+    ├─ 0.000 MPI_Init
+    ├─ 0.055 comp
+    │  ├─ 0.003 data_init
+    │  ├─ 0.022 local_sort
+    │  ├─ 0.000 select_samples
+    │  ├─ 0.000 choose_splitters
+    │  ├─ 0.011 partition_data
+    │  └─ 0.019 final_local_sort
+    ├─ 0.017 comm
+    │  ├─ 0.006 gather_samples
+    │  │  └─ 0.006 MPI_Gather
+    │  ├─ 0.005 broadcast_splitters
+    │  │  └─ 0.005 MPI_Bcast
+    │  ├─ 0.002 send_recv_sizes
+    │  │  └─ 0.002 MPI_Alltoall
+    │  └─ 0.003 send_recv_buckets
+    │     └─ 0.002 MPI_Alltoallv
+    ├─ 0.000 MPI_Finalize
+    ├─ 0.000 MPI_Initialized
+    ├─ 0.000 MPI_Finalized
+    └─ 0.022 MPI_Comm_dup
+
+   ```
    ### 3b. Collect Metadata
    ```
    Bitonic Sort Metadata
@@ -256,3 +283,16 @@ node	num_procs	input_size
     4252203976  ai and online: https://www.christianbaun.de/CG...  
     ```
 
+    ```
+    Sample Sort
+
+    	nid	spot.channel	Min time/rank	Max time/rank	Avg time/rank	Total time	Variance time/rank	Min time/rank (exc)	Max time/rank (exc)	Avg time/rank (exc)	Total time (exc)	Calls/rank (min)	Calls/rank (avg)	Calls/rank (max)	Calls/rank (total)	name	num_procs
+node	profile																	
+{'name': 'main', 'type': 'function'}	2092793214	1.0	regionprofile	1.069346	1.069460	1.069425	17.110803	0.000000	0.976217	0.976878	0.976332	15.621311	NaN	NaN	NaN	NaN	main	16
+{'name': 'MPI_Init', 'type': 'function'}	2092793214	2.0	regionprofile	0.000030	0.000134	0.000108	0.001732	0.000000	0.000030	0.000134	0.000108	0.001732	1.0	1.0	1.0	16.0	MPI_Init	16
+{'name': 'comp', 'type': 'function'}	2092793214	3.0	regionprofile	0.035956	0.075938	0.054651	0.874419	0.000051	0.000060	0.000074	0.000066	0.001049	6.0	6.0	6.0	96.0	comp	16
+{'name': 'data_init', 'type': 'function'}	2092793214	4.0	regionprofile	0.002546	0.002581	0.002556	0.040900	0.000000	0.002546	0.002581	0.002556	0.040900	1.0	1.0	1.0	16.0	data_init	16
+{'name': 'local_sort', 'type': 'function'}	2092793214	5.0	regionprofile	0.022239	0.022707	0.022332	0.357317	0.000000	0.022239	0.022707	0.022332	0.357317	1.0	1.0	1.0	16.0	local_sort	16
+
+
+    ```
