@@ -330,3 +330,56 @@ Looking at the following images, we can see that for the 2^24 input, the perturb
 
 As for the analysis of the results, we can see that overall, looking at the graphs that the perturbed and reverse input arrays took longer for the most part, but it's safe to say that there isn't a definitive answer on which one takes longer than others based on these graphs, as the results aren't always consistent. That's why I'm making the assumption based on the graphs above that each input type is equivalent when it comes to this implementation, minus the occasional spikes in times that can be attributed to grace.
 
+--------------------------------------------------
+
+```
+Radix Sort:
+```
+
+![Comm Graph](./radixGraphs/avg_comm.png)
+
+![Comp Large Graph](./radixGraphs/avg_comp_large.png)
+
+--------------------------------------------------
+
+The above 2 graphs show all array input sizes with respect to the number of processes they were run on, and the avg time/rank it took for either the **comm** section, or the **comp_large** section. The reason there are 4 dots per processor, is because these include each different type of input array as their own points.
+
+The communication performance seemed to stay roughly equal for most processors and input sizes, but there did seem to be spikes for the 1%perturbed array. I hypothesize that this is due to extra communication required randomly between the different processes, or the way that I created the 1%perturbed array as it was significantly different than the others.
+
+As for the computation performance, there seemed to be a steady decrease as we increased processors. I estimate it to be about a 75% decrease from one input size to the next. With the increase in input size by 2^2, being 4x, each array size increase the avg time/rank by about 4x. It is important to note, however, that this is the **avg time/rank** from comp_large. This means that all it's the average time spent per processor on computations done. If we were to add this up between all the processes, we would see that the total time would be a lot larger.
+
+As you may notice, there are only data points for up to 8 processes. This was due to faulty implementation which would cause improper memory access to the elements once I ran 16+ processes. I'm working on fixing this and will have the rest of the caliper files done with corrected plots by the final presentation.
+
+--------------------------------------------------
+
+![2^16 Graph](./radixGraphs/avg_2^16.png)
+
+![2^18 Graph](./radixGraphs/avg_2^18.png)
+
+![2^20 Graph](./radixGraphs/avg_2^20.png)
+
+![2^22 Graph](./radixGraphs/avg_2^22.png)
+
+![2^24 Graph](./radixGraphs/avg_2^24.png)
+
+![2^26 Graph](./radixGraphs/avg_2^26.png)
+
+![2^28 Graph](./radixGraphs/avg_2^28.png)
+
+--------------------------------------------------
+
+The graphs above show each array size in more detail, with each processor size mapped to time in seconds. Each line represents an input type, which helps gain a better understanding on how the input types may impact overall main runtime.
+
+The big takeaway from the different array sizes, input types, and number of processors is that the 1%perturbed took slightly longer than the rest of the inputs. Again, I believe this is due to how it was generated, as the process was very different than the other array types. Lastly, the avg time/rank seems to show a steady decrease as more processes are added, but the rate of the decrease seemed to taper off relatively quick, but the overall decrease seemed to be 50%.
+
+Again, as you may notice, there are only data points for up to 8 processes. This was due to faulty implementation which would cause improper memory access to the elements once I ran 16+ processes. I'm working on fixing this and will have the rest of the caliper files done with corrected plots by the final presentation.
+
+--------------------------------------------------
+
+```
+Merge Sort
+```
+
+Unfortunately, due to issues regarding jobs being stuck in queue, graphs were not able to be produced for the caliper files calculated for the analysis portion of the project. However, caliper all caliper files implementations combinations, besides processors of 1024, have been created and do exist for the implementation of merge sort. These graphs and proper analysis will be included for the presentation.
+
+--------------------------------------------------
