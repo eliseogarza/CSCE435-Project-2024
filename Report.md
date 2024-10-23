@@ -332,7 +332,9 @@ As for the analysis of the results, we can see that overall, looking at the grap
 
 --------------------------------------------------
 
-**Radix Sort:**
+```
+Radix Sort:
+```
 
 ![Comm Graph](./radixGraphs/avg_comm.png)
 
