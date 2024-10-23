@@ -383,3 +383,24 @@ Merge Sort
 Unfortunately, due to issues regarding jobs being stuck in queue, graphs were not able to be produced for the caliper files calculated for the analysis portion of the project. However, caliper all caliper files implementations combinations, besides processors of 1024, have been created and do exist for the implementation of merge sort. These graphs and proper analysis will be included for the presentation.
 
 --------------------------------------------------
+
+```
+Sample Sort
+```
+![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/Main_S16.png)
+![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/Main_S18.png)
+![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/Main_S20.png)
+![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/Main_S22.png)
+![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/Main_S24.png)
+![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/Main_S26.png)
+![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/Main_S28.png)
+
+The following graphs display the performance of the Sample Sort algorithm across various input sizes and processor counts. However, it should be noted that the algorithm failed to execute correctly for configurations involving 512 and 1024 processors. This issue was likely caused by scaling limitations or communication overheads at those higher processor counts.
+
+From the analysis of the graphs, one key observation is that Sample Sort performs better as the input array size increases. For smaller arrays, there were more performance outliers, indicating variability in the execution times across different processor configurations. However, with larger arrays—specifically those with sizes of 2^24, 2^26, and 2^28 the algorithm demonstrated more consistent performance, with fewer outliers and better scalability.
+
+This suggests that Sample Sort is more effective at handling larger datasets, where the overhead of dividing and distributing the workload across processors is balanced by the increased computation. The larger arrays allow the algorithm to fully utilize the available processors, leading to more efficient parallelization and reduced time per processor.
+
+In conclusion, while Sample Sort struggles with higher processor counts for smaller arrays, it excels with larger input sizes, demonstrating improved performance and scalability as the problem size grows.
+
+--------------------------------------------------
