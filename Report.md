@@ -330,6 +330,8 @@ Looking at the following images, we can see that for the 2^24 input, the perturb
 
 As for the analysis of the results, we can see that overall, looking at the graphs that the perturbed and reverse input arrays took longer for the most part, but it's safe to say that there isn't a definitive answer on which one takes longer than others based on these graphs, as the results aren't always consistent. That's why I'm making the assumption based on the graphs above that each input type is equivalent when it comes to this implementation, minus the occasional spikes in times that can be attributed to grace.
 
+--------------------------------------------------
+
 **Radix Sort:**
 ![Comm Graph](./radixGraphs/avg_comm.png)
 
