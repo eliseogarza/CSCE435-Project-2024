@@ -312,3 +312,10 @@ Radix Sort Metadata:
 cali.caliper.version	mpi.world.size	spot.metrics	spot.timeseries.metrics	spot.format.version	spot.options	spot.channels	cali.channel	spot:node.order	spot:output	spot:region.count	spot:time.exclusive	launchdate	libraries	cmdline	cluster	algorithm	programming_model	data_type	size_of_data_type	input_size	input_type	num_procs	scalability	group_num	implementation_source
 profile																										
 3307806477	2.11.0	32	min#inclusive#sum#time.duration,max#inclusive#...		2	node.order,region.count,time.exclusive	regionprofile	spot	true	32-1048576.cali	true	true	1729135233	[/scratch/group/csce435-f24/Caliper/caliper/li...	[./radix_sort, 1048576]	c	radix	mpi	int	4 bytes	1048576	random	32	strong	4	online
+
+```
+### 4. Performance Evaluation
+```
+Bitonic Sort
+
+```
