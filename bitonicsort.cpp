@@ -177,16 +177,47 @@ int main(int argc, char *argv[]) {
     CALI_MARK_BEGIN(data_init_runtime);
 
     // Initialize Array for Storing Random Numbers
-    const char* input_type = "random";
-    int size = 1 << 20;
+    const char* input_type = "1_perc_perturbed";
+    int size = 1 << 16;
     array_size = size / num_processes;
     array = new int[array_size];
+    bool random = false;
+    bool sorted = false;
+    bool reverse = false;
+    bool perturbed = true;
 
-    // Generate Random Numbers for Sorting (within each process)
-    srand(time(NULL));
-    for (i = 0; i < array_size; i++) {
-        array[i] = rand() % (32768);
+    if (random){
+	// Generate Random Numbers for Sorting (within each process)
+        for (i = 0; i < array_size; i++) {
+            array[i] = rand() % (size);
+        }
+    }else if(sorted){
+	// Generate sorted input for sorting (within each process)
+	int added = process_rank * array_size;
+	for(i = 0; i < array_size; i++){
+	    array[i] = i + added;
+	}
+    }else if(reverse){
+	// Generate reverse sorted input for sorting (within each process)
+	int added = (num_processes - process_rank) * array_size;
+	array[0] = added;
+	for (i = 1; i < array_size; i++) {
+            array[i] = array[i-1] - 1;
+        }
+    }else if(perturbed){
+	// Generate sorted 1% perturbed input for sorting (within each process)
+	int added = process_rank * array_size;
+	for(i = 0; i < array_size; i++){
+	    array[i] = i + added;
+	}
+	int temp = array[0];
+	array[0] = array[1];
+	array[1] = temp;
     }
+    std::cout << std::endl;
+
+
+    srand(time(NULL));
 
     CALI_MARK_END(data_init_runtime);
 
@@ -228,42 +259,24 @@ int main(int argc, char *argv[]) {
     MPI_Barrier(MPI_COMM_WORLD);
     CALI_MARK_END(comm);
 
+    bool works = true;
 
-    // Print results and time for process 0
-    if (process_rank == 0) {
-
-        std::cout << "Displaying sorted array (only 10 elements for quick verification)" << std::endl;
-	
-        for (i = 0; i < array_size; i++) {
-            if(i < 10) {	
-		std::cout << array[i] << " ";
-	    }
-        }
-
-        std::cout << std::endl;
-
-
-	bool works = true;
-
-        CALI_MARK_BEGIN(correctness_check);
-	double start = MPI_Wtime();
-        for (i = 1; i < array_size; i++) {
-            if(array[i-1] > array[i]) {	
-		works = false;
-	    }
-        }
-	CALI_MARK_END(correctness_check);
-
-	double end = MPI_Wtime();
-	std::cout << "correctness check time is: " << start - end << std::endl;
-	
-
-	if(works){
-	    std::cout << "Sorting works" << std::endl;
-	} else{
-	    std::cout << "Sorting failed" << std::endl;
+    CALI_MARK_BEGIN(correctness_check);
+    for (i = 1; i < array_size; i++) {
+        if(array[i-1] > array[i]) {	
+            works = false;
 	}
     }
+    CALI_MARK_END(correctness_check);
+
+    if(works){
+	std::cout << "process " << process_rank << " is sorted.";
+    }else{
+	std::cout << "process " << process_rank << "is not sorted";
+    }
+    std::cout << std::endl;
+
+
     adiak::init(NULL);
     adiak::launchdate();    // launch date of the job
     adiak::libraries();     // Libraries used
@@ -294,6 +307,7 @@ int main(int argc, char *argv[]) {
     CALI_MARK_END(comm);
 
     CALI_MARK_END(mainFunc);
+    
 
     return 0;
 }
