@@ -317,5 +317,16 @@ profile
 ### 4. Performance Evaluation
 ```
 Bitonic Sort
+```
+![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/Main_2%5E16.png)
+![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/Main_2%5E18.png)
+![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/Main_2%5E20.png)
+![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/Main_2%5E22.png)
+![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/Main_2%5E24.png)
+![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/Main_2%5E26.png)
+![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/Main_2%5E28.png)
+```
+Looking at the following images, we can see that for the 2^24 input, the perturbed did not run on the 1024 processor, which can be attribtued to a grace issue. The same thing is for the sorted input on the 2^24 size array, where the 512 and 1024 processor did not run either. This can also be attributed to grace issues, which have been prevalent. The same issue occured on the 2^16 graph, where the reverse 1024 processor job did not run, also due to grace issues.
 
+As for the analysis of the results, we can see that overall, looking at the graphs that the perturbed and reverse input arrays took longer for the most part, but it's safe to say that there isn't a definitive answer on which one takes longer than others based on these graphs, as the results aren't always consistent. That's why I'm making the assumption based on the graphs above that each input type is equivalent when it comes to this implementation, minus the occasional spikes in times that can be attributed to grace.
 ```
