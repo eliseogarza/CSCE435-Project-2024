@@ -6,6 +6,8 @@
 #include <caliper/cali.h>
 #include <adiak.hpp>
 #include <algorithm>
+#include <random>
+#include <string>
 
 using namespace std;
 
@@ -124,6 +126,7 @@ int main(int argc, char* argv[]) {
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
     int array_size = std::atoi(argv[1]);
+    string input_type = argv[3];
     vector<int> vec;
     adiak::init(NULL);
     adiak::launchdate();    // launch date of the job
@@ -135,7 +138,7 @@ int main(int argc, char* argv[]) {
     adiak::value("data_type", "int"); // The datatype of input elements (e.g., double, int, float)
     adiak::value("size_of_data_type", sizeof(int)); // sizeof(datatype) of input elements in bytes (e.g., 1, 2, 4)
     adiak::value("input_size", array_size); // The number of elements in input dataset (1000)
-    adiak::value("input_type", "Random"); // For sorting, this would be choices: ("Sorted", "ReverseSorted", "Random", "1_perc_perturbed")
+    adiak::value("input_type", input_type); // For sorting, this would be choices: ("Sorted", "ReverseSorted", "Random", "1_perc_perturbed")
     adiak::value("num_procs", world_size); // The number of processors (MPI ranks)
     adiak::value("scalability", "strong"); // The scalability of your algorithm. choices: ("strong", "weak")
     adiak::value("group_num", "4"); // The number of your group (integer, e.g., 1, 10)
@@ -143,9 +146,38 @@ int main(int argc, char* argv[]) {
     CALI_MARK_BEGIN("data_init_runtime");
     if (world_rank == 0) {
         vec.resize(array_size);
+        if (input_type == "Sorted") {
+        for (int i = 0; i < array_size; ++i) {
+            vec[i] = i;
+        }
+        // cout << "Howdy1" << endl;
+    } else if (input_type == "ReverseSorted") {
+        for (int i = 0; i < array_size; ++i) {
+            vec[i] = array_size - i;
+        }
+        // cout << "Howdy2" << endl;
+    } else if (input_type == "1_perc_perturbed") {
+        for (int i = 0; i < array_size; ++i) {
+            vec[i] = i;
+        }
+        // Perturb 1% of the vector
+        int num_perturbed = array_size / 100;
+        random_device rd;
+        mt19937 gen(rd());
+        uniform_int_distribution<> dis(0, array_size - 1);
+        for (int i = 0; i < num_perturbed; ++i) {
+            int idx1 = dis(gen);
+            int idx2 = dis(gen);
+            swap(vec[idx1], vec[idx2]);
+        }
+        // cout << "Howdy3" << endl;
+    } else {
+        // Random case
         for (int i = 0; i < array_size; ++i) {
             vec[i] = std::rand() % 10000;
         }
+        // cout << "Howdy4" << endl;
+    }
     }
     CALI_MARK_END("data_init_runtime");
     parallelMergeSort(vec, array_size, world_rank, world_size);
@@ -153,7 +185,8 @@ int main(int argc, char* argv[]) {
     CALI_MARK_BEGIN("correctness_check");
     if(world_rank == 0){
         if(is_sorted(vec.begin(), vec.end())){
-            cout << "The vector is sorted!" << endl;
+            // cout << "The vector is sorted!" << endl;
+            // cout << world_size << endl;
         }
     }
     CALI_MARK_END("correctness_check");

@@ -376,3 +376,10 @@ Again, as you may notice, there are only data points for up to 8 processes. This
 
 --------------------------------------------------
 
+```
+Merge Sort
+```
+
+Unfortunately, due to issues regarding jobs being stuck in queue, graphs were not able to be produced for the caliper files calculated for the analysis portion of the project. However, caliper all caliper files implementations combinations, besides processors of 1024, have been created and do exist for the implementation of merge sort. These graphs and proper analysis will be included for the presentation.
+
+--------------------------------------------------
