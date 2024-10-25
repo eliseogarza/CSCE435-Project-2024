@@ -4,13 +4,16 @@
 *   This program parallelizes radix sort in an effort to improve
 *   computational times and offer a way to improve performance
 * AUTHOR: Eliseo Garza
-* LAST REVISED: 10/16/2024
+* LAST REVISED: 10/24/2024
 ******************************************************************************/
 
 #include "mpi.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <ctime>
+#include <random>
+#include <algorithm>
 
 #include <caliper/cali.h>
 #include <caliper/cali-manager.h>
@@ -99,13 +102,18 @@ int correctnessCheck(int *original, int *sortedArr, int n) {
 
 int main(int argc, char *argv[]) {
     CALI_CXX_MARK_FUNCTION;
+    int pow;
     int array_size;
+    char array_type;
+    std::string input_type;
 
-    if (argc == 2) {
-        array_size = atoi(argv[1]);
+    if (argc == 3) {
+        pow = atoi(argv[1]);
+        array_size = 1 << pow; // 2^pow
+        array_type = argv[2][0];
     }
     else {
-        printf("\n Please provide the size of the array to be sorted");
+        printf("\n Please provide the power for the array size (ex. 16 for 2^16), the number of process, and type of array ('u' for random/unsorted, 's' for sorted, 'r' for reverse sorted, 'p' for 1%% perturbed) without quotation marks.\n");
         return 0;
     }
 
@@ -136,15 +144,96 @@ int main(int argc, char *argv[]) {
     int *originalArr;
     int *adjustedArr;
     int adjustedSize, maxVal, subinputSize, offset;
+    int sizeLimit = 1000000; // FIXME: Change this to adjust largest numbers generated for array
+    
+    // ************************************
 
     if (world_rank == MASTER) {
         originalArr = new int[array_size];
 
+        printf("Power: %d\n", pow);
+        printf("Array Size: 2^%d , which is %d\n", pow, array_size);
+
         CALI_MARK_BEGIN(data_init_runtime);
 
+        // Seed random number generator
+        srand(static_cast<unsigned int>(time(0)));
+
         // Generate input array randomly
-        for (int i = 0; i < array_size; i++) {
-            originalArr[i] = rand() % 1000000;
+        if (array_type == 'u') {
+            for (int i = 0; i < array_size; i++) {
+                originalArr[i] = rand() % sizeLimit;
+            }
+
+            input_type = "Random";
+
+            printf("Array Type: Random/Unsorted\n");
+        }
+        
+        // Generate a sorted array
+        else if (array_type == 's') {
+            // for (int i = 0; i < array_size; i++) {
+            //     originalArr[i] = i;
+            // }
+
+            for (int i = 0; i < array_size; i++) {
+                originalArr[i] = rand() % sizeLimit;
+            }
+
+            // Sorts in ascending order
+            sequentialRadix(originalArr, array_size);
+
+            input_type = "Sorted";
+
+            printf("Array Type: Sorted\n");
+        }
+        
+        // Generate a reverse sorted array
+        else if (array_type == 'r') {
+            // for (int i = 0; i < array_size; i++) {
+            //     originalArr[i] = array_size - i - 1;
+            // }
+
+            for (int i = 0; i < array_size; i++) {
+                originalArr[i] = rand() % sizeLimit;
+            }
+
+            // Sorts in ascending order (then need to reverse the array)
+            sequentialRadix(originalArr, array_size);
+            std::reverse(originalArr, originalArr + array_size);
+
+            input_type = "ReverseSorted";
+
+            printf("Array Type: Reverse Sorted\n");
+        }
+        
+        // Generate a 1% perturbed array
+        else if (array_type == 'p') {
+            // First create sorted array
+            for (int i = 0; i < array_size; i++) {
+                originalArr[i] = rand() % sizeLimit;
+            }
+
+            sequentialRadix(originalArr, array_size);
+
+            // Then swap 1% of elements randomly
+            for (int i = 0; i < ceil(array_size / 100.0); i++) {
+                std::swap(originalArr[rand() % array_size], originalArr[rand() % array_size]);
+            }
+
+            input_type = "1_perc_perturbed";
+
+            printf("Array Type: 1%% perturbed\n");
+        }
+
+        // Bad input for array_type, defaulting to random and letting user know
+        else {
+            printf("Didn't correctly specify type of array, defaulting to random.\n");
+            for (int i = 0; i < array_size; i++) {
+                originalArr[i] = rand() % sizeLimit;
+            }
+
+            input_type = "Random";
         }
 
         CALI_MARK_END(data_init_runtime);
@@ -155,7 +244,7 @@ int main(int argc, char *argv[]) {
         CALI_MARK_BEGIN(comp_small);
 
         // Find number of extra zeroes needed for equal processor workloads
-        subinputSize = ceil(array_size / ((float) world_size));
+        subinputSize = ceil(array_size / ((double) world_size));
         offset = world_size * subinputSize - array_size;
 
         adjustedSize = subinputSize * world_size;
@@ -178,7 +267,6 @@ int main(int argc, char *argv[]) {
     CALI_MARK_BEGIN(comm);
     CALI_MARK_BEGIN(comm_small);
 
-    // Send values needed from MASTER to child processes
     MPI_Bcast(&maxVal, 1, MPI_INT, MASTER, MPI_COMM_WORLD);
     MPI_Bcast(&array_size, 1, MPI_INT, MASTER, MPI_COMM_WORLD);
     MPI_Bcast(&subinputSize, 1, MPI_INT, MASTER, MPI_COMM_WORLD);
@@ -198,6 +286,7 @@ int main(int argc, char *argv[]) {
 
     // Scatter the original array into sub-arrays for each processor
     MPI_Scatter(adjustedArr, subinputSize, MPI_INTEGER, subinput, subinputSize, MPI_INTEGER, MASTER, MPI_COMM_WORLD);
+
     CALI_MARK_END(comm_small);
     CALI_MARK_END(comm);
 
@@ -206,8 +295,27 @@ int main(int argc, char *argv[]) {
     // New array for redistribution step
     int *newSubinput = new int[subinputSize];
 
+    int **sendBlocks = new int*[world_size];
+    int **recvBlocks = new int*[world_size];
+
+    for (int i = 0; i < world_size; i++) {
+        sendBlocks[i] = new int[subinputSize * 2];
+        recvBlocks[i] = new int[subinputSize * 2];
+    }
+
     // Counting sort for each digit
     for (int exp = 1; maxVal / exp > 0; exp *= 10) {
+        CALI_MARK_BEGIN(comp);
+        CALI_MARK_BEGIN(comp_small);
+
+        // Initialize all values to -1
+        for (int i = 0; i < world_size; i++) {
+            std::fill(sendBlocks[i], sendBlocks[i] + (subinputSize * 2), -1);
+        }
+
+        CALI_MARK_END(comp_small);
+        CALI_MARK_END(comp);
+        
         // Initialize arrays for future use
         int count[10] = {0};
         int sumCounts[10] = {0};
@@ -215,14 +323,13 @@ int main(int argc, char *argv[]) {
         int leftSum[10] = {0};
 
         CALI_MARK_BEGIN(comp);
-        CALI_MARK_BEGIN(comp_large);
+        CALI_MARK_BEGIN(comp_small);
 
         countingSort(subinput, count, subinputSize, exp);
 
-        CALI_MARK_END(comp_large);
+        CALI_MARK_END(comp_small);
         CALI_MARK_END(comp);
 
-        // TODO: 2nd most communciation time spent here
         CALI_MARK_BEGIN(comm);
         CALI_MARK_BEGIN(comm_small);
 
@@ -255,19 +362,25 @@ int main(int argc, char *argv[]) {
             prefixSum[i] += prefixSum[i - 1];
         }
 
-        CALI_MARK_END(comp_small);
-        CALI_MARK_END(comp);
-
         MPI_Request request;
         MPI_Status status;
         int lsdSent[10] = {0};
 
         // Initializing for later use
-        int valIndexPair[2];
         int val, lsd, destIndex, destProcess, localDestIndex;
+        
+        // FIXME: Main issue, changing from regular array to dynamic array based on input size
+        // int blockSent[1024] = {0};
+        int* blockSent = new int[world_size]();
+
+        CALI_MARK_END(comp_small);
+        CALI_MARK_END(comp);
 
         // Use MPI calls to send and receive information from processes
         for (int i = 0; i < subinputSize; i++) {
+            CALI_MARK_BEGIN(comp);
+            CALI_MARK_BEGIN(comp_large);
+
             val = subinput[i];
             lsd = (subinput[i] / exp) % 10;
 
@@ -277,36 +390,75 @@ int main(int argc, char *argv[]) {
             // Increment the count for elements with lsd and set the value plus index
             lsdSent[lsd]++;
             destProcess = destIndex / subinputSize;
-            valIndexPair[0] = val;
-            valIndexPair[1] = destIndex;
+            localDestIndex = destIndex % subinputSize;
 
-            // TODO: Most communciation time spent here
+            // Sets the values and local index in destination process
+            sendBlocks[destProcess][blockSent[destProcess] * 2] = val;
+            sendBlocks[destProcess][blockSent[destProcess] * 2 + 1] = localDestIndex;
+            blockSent[destProcess]++;
+
+            CALI_MARK_END(comp_large);
+            CALI_MARK_END(comp);
+        }
+
+        // FIXME: Main issue, changing from regular array to dynamic array based on input size
+        // int blockReceive[1024] = {0};
+        int* blockReceive = new int[world_size]();
+
+        for (int i = 0; i < world_size; i++) {
             CALI_MARK_BEGIN(comm);
             CALI_MARK_BEGIN(comm_large);
 
-            // Send and receive from processes 
-            MPI_Isend(&valIndexPair, 2, MPI_INT, destProcess, 0, MPI_COMM_WORLD, &request);
-            MPI_Recv(valIndexPair, 2, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+            MPI_Isend(&blockSent[i], 1, MPI_INT, i, 0, MPI_COMM_WORLD, &request);
+
+            // Store the size in a buffer and then write it to blockReceive for the origin processor
+            int buffer;
+            MPI_Recv(&buffer, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+
+            blockReceive[status.MPI_SOURCE] = buffer;
 
             CALI_MARK_END(comm_large);
             CALI_MARK_END(comm);
-
-            // Find the local index of the new value and set it
-            localDestIndex = valIndexPair[1] % subinputSize;
-            val = valIndexPair[0];
-            newSubinput[localDestIndex] = val;
         }
+
+        MPI_Barrier(MPI_COMM_WORLD);
+
+        // Send + receive blocks of a specific size
+        for (int i = 0; i < world_size; i++) {
+            CALI_MARK_BEGIN(comm);
+            CALI_MARK_BEGIN(comm_large);
+
+            MPI_Isend(sendBlocks[i], blockSent[i] * 2, MPI_INT, i, 0, MPI_COMM_WORLD, &request);
+            MPI_Recv(recvBlocks[i], blockReceive[i] * 2, MPI_INT, i, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+
+            CALI_MARK_END(comm_large);
+            CALI_MARK_END(comm);
+        }
+
+        MPI_Barrier(MPI_COMM_WORLD);
 
         CALI_MARK_BEGIN(comp);
         CALI_MARK_BEGIN(comp_small);
 
-        // Transfer the values before continuing
+        // Build a new sub-array from these sent blocks
+        for (int sender = 0; sender < world_size; sender++) {
+            for (int i = 0; i < blockReceive[sender]; i++) {
+                val = recvBlocks[sender][2 * i];
+                localDestIndex = recvBlocks[sender][2 * i + 1];
+                newSubinput[localDestIndex] = val;
+            }
+        }
+
         for (int i = 0; i < subinputSize; i++) {
-            subinput[i] = newSubinput[i];
+          subinput[i] = newSubinput[i];
         }
 
         CALI_MARK_END(comp_small);
         CALI_MARK_END(comp);
+
+        // Deallocate memory from this iteration here
+        delete[] blockSent;
+        delete[] blockReceive;
     }
 
     // Final sorted array sent to root process
@@ -332,10 +484,27 @@ int main(int argc, char *argv[]) {
         int result = correctnessCheck(originalArr, finalArr, array_size);
         CALI_MARK_END(correctness_check);
 
+        // FIXME: Used this part to check that the final array was sorted
+        // ***********************************************************
+
+        // printf("Original Array:\n");
+
+        // for (int i = 0; i < array_size; i++) {
+        //     printf("%d ", originalArr[i]);
+        // }
+
+        // printf("\nFinal Array:\n");
+
+        // for (int i = 0; i < array_size; i++) {
+        //     printf("%d ", finalArr[i]);
+        // }
+
+        // ***********************************************************
+
         if (result) {
-            printf("Correctly sorted!\n");
+            printf("Correctly sorted!\n\n");
         } else {
-            printf("Not sorted properly.\n");
+            printf("Not sorted properly.\n\n");
         }
 
         // Make sure pointer goes back to original location for de-allocation
@@ -346,6 +515,15 @@ int main(int argc, char *argv[]) {
         delete[] finalArr;
     }
 
+    MPI_Barrier(MPI_COMM_WORLD);
+
+    for (int i = 0; i < world_size; i++) {
+        delete[] sendBlocks[i];
+        delete[] recvBlocks[i];
+    }
+    
+    delete[] sendBlocks;
+    delete[] recvBlocks;
     delete[] subinput;
     delete[] newSubinput;
 
@@ -359,7 +537,7 @@ int main(int argc, char *argv[]) {
     adiak::value("data_type", "int"); // The datatype of input elements (e.g., double, int, float)
     adiak::value("size_of_data_type", "4 bytes"); // sizeof(datatype) of input elements in bytes (e.g., 1, 2, 4)
     adiak::value("input_size", array_size); // The number of elements in input dataset (1000)
-    adiak::value("input_type", "random"); // For sorting, this would be choices: ("Sorted", "ReverseSorted", "Random", "1_perc_perturbed")
+    adiak::value("input_type", input_type); // For sorting, this would be choices: ("Sorted", "ReverseSorted", "Random", "1_perc_perturbed")
     adiak::value("num_procs", world_size); // The number of processors (MPI ranks)
     adiak::value("scalability", "strong"); // The scalability of your algorithm. choices: ("strong", "weak")
     adiak::value("group_num", "4"); // The number of your group (integer, e.g., 1, 10)
