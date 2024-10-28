@@ -336,43 +336,31 @@ As for the analysis of the results, we can see that overall, looking at the grap
 Radix Sort:
 ```
 
-![Comm Graph](./radixGraphs/avg_comm.png)
+![Comm Graph](./radixSortImages/weak_scaling_comm_1_perc_perturbed.png)
 
-![Comp Large Graph](./radixGraphs/avg_comp_large.png)
-
---------------------------------------------------
-
-The above 2 graphs show all array input sizes with respect to the number of processes they were run on, and the avg time/rank it took for either the **comm** section, or the **comp_large** section. The reason there are 4 dots per processor, is because these include each different type of input array as their own points.
-
-The communication performance seemed to stay roughly equal for most processors and input sizes, but there did seem to be spikes for the 1%perturbed array. I hypothesize that this is due to extra communication required randomly between the different processes, or the way that I created the 1%perturbed array as it was significantly different than the others.
-
-As for the computation performance, there seemed to be a steady decrease as we increased processors. I estimate it to be about a 75% decrease from one input size to the next. With the increase in input size by 2^2, being 4x, each array size increase the avg time/rank by about 4x. It is important to note, however, that this is the **avg time/rank** from comp_large. This means that all it's the average time spent per processor on computations done. If we were to add this up between all the processes, we would see that the total time would be a lot larger.
-
-As you may notice, there are only data points for up to 8 processes. This was due to faulty implementation which would cause improper memory access to the elements once I ran 16+ processes. I'm working on fixing this and will have the rest of the caliper files done with corrected plots by the final presentation.
+![Comp Large Graph](./radixSortImages/comp_large_avg.png)
 
 --------------------------------------------------
 
-![2^16 Graph](./radixGraphs/avg_2^16.png)
+The first graph shows all array input sizes with respect to the number of processes they were run on for weak scaling for comm.  The communication performance seemed to stay roughly equal for most processors and input sizes, but there did seem to be spikes for the 1%perturbed array which is shown here. I hypothesize that this is due to extra communication required randomly between the different processes, or the way that I created the 1%perturbed array as it was significantly different than the others. Additionally, as the array size increased, the communication time increased with it, with the biggest impact shown during the 2^28 array.
 
-![2^18 Graph](./radixGraphs/avg_2^18.png)
-
-![2^20 Graph](./radixGraphs/avg_2^20.png)
-
-![2^22 Graph](./radixGraphs/avg_2^22.png)
-
-![2^24 Graph](./radixGraphs/avg_2^24.png)
-
-![2^26 Graph](./radixGraphs/avg_2^26.png)
-
-![2^28 Graph](./radixGraphs/avg_2^28.png)
+The second graph shows the avg time/rank it took for the **comp_large** section during an array of size 2^22. For the computation performance, there seemed to be a steady decrease as we increased processors. I estimate it to be about a 75% decrease from one input size to the next. With the increase in input size by 2^2, being 4x, each array size increase the avg time/rank by about 4x. It is important to note, however, that this is the **avg time/rank** from comp_large. This means that all it's the average time spent per processor on computations done. If we were to add this up between all the processes, we would see that the total time would be a lot larger.
 
 --------------------------------------------------
 
-The graphs above show each array size in more detail, with each processor size mapped to time in seconds. Each line represents an input type, which helps gain a better understanding on how the input types may impact overall main runtime.
+![Main Speedup Graph](./radixSortImages/speedup_main_ReverseSorted.png)
 
-The big takeaway from the different array sizes, input types, and number of processors is that the 1%perturbed took slightly longer than the rest of the inputs. Again, I believe this is due to how it was generated, as the process was very different than the other array types. Lastly, the avg time/rank seems to show a steady decrease as more processes are added, but the rate of the decrease seemed to taper off relatively quick, but the overall decrease seemed to be 50%.
+![Strong Scaling Main Graph](./radixSortImages/strong_scaling_main_2^26.png)
 
-Again, as you may notice, there are only data points for up to 8 processes. This was due to faulty implementation which would cause improper memory access to the elements once I ran 16+ processes. I'm working on fixing this and will have the rest of the caliper files done with corrected plots by the final presentation.
+--------------------------------------------------
+
+The graphs above show main in more detail. The top graph shows the speedup of main, while the bottom one shows the scaling of main for the array size 2^26. In the top graph, we can see there are several lines, each representing a different array input size, with the input type here being Reverse Sorted. This specific graph shows the speedup in relation to T(1), depicting the overall speedup as the number of processors increase. From the graph it can be concluded that as the number of processors increase, and as the array size increases, the speedup largely increases as a byproduct.
+
+The second graph shows an array of size 2^26 with each line representing an input type, helping gain a better understanding on how the input types may impact overall main runtime. From this graph, the big takeaway is that the overall main time decreases drastically as the number of processes increases, with little variance coming from the type of input.
+
+Something to note is that the algorithm was unable to run for 1024 processors, and as such I was unable to gather caliper files and subsequent graphs with 1024 data points. I believe this was due to memory or scaling limitations associated with the large number of processors.
+
+In conclusion, Radix Sort seems to run best when both the array size and number of processors are increased. Generally, the larger the array and the more processors, the better for this algorithm. Radix Sort doesn't perform well with few processors and/or a small array as it can't take full advantage of the parallelism offered by the algorithm.
 
 --------------------------------------------------
 
