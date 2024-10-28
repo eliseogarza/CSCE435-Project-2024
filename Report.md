@@ -318,17 +318,15 @@ profile
 ```
 Bitonic Sort
 ```
-![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/Main_2%5E16.png)
-![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/Main_2%5E18.png)
-![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/Main_2%5E20.png)
-![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/Main_2%5E22.png)
-![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/Main_2%5E24.png)
-![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/Main_2%5E26.png)
-![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/Main_2%5E28.png)
+![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/comm_function_runtime_67108864.png)
+![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/comp_large_function_runtime_65536.png)
+![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/main_function_runtime_16777216.png)
+![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/strong_scaling_speedup_main_across_sizes_sorted.png)
+![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/weak_scaling_main_1_perc_perturbed.png)
 
 Looking at the following images, we can see that for the 2^24 input, the perturbed did not run on the 1024 processor, which can be attribtued to a grace issue. The same thing is for the sorted input on the 2^24 size array, where the 512 and 1024 processor did not run either. This can also be attributed to grace issues, which have been prevalent. The same issue occured on the 2^16 graph, where the reverse 1024 processor job did not run, also due to grace issues.
 
-As for the analysis of the results, we can see that overall, looking at the graphs that the perturbed and reverse input arrays took longer for the most part, but it's safe to say that there isn't a definitive answer on which one takes longer than others based on these graphs, as the results aren't always consistent. That's why I'm making the assumption based on the graphs above that each input type is equivalent when it comes to this implementation, minus the occasional spikes in times that can be attributed to grace.
+We can see that for bitonic sort, as we increase the number of processors the communication runtime increases, while the computation time decreases. Despite this, we can see that the overall main function runtime still increases as you add more processors, indicating that this implementation does not scale well. This is also evident in the speedup graph, where for most of the sizes, the lines trend downwards and become consistent, with the only exception being the largest input size which has an increase in speedup as more processors are added. Overall, it's safe to say that this implementation of bitonic sort does not do well in comparison with the other algorithms in terms of speedup, as it is not as consistent compared to the other implementations like sample or radix sort.
 
 --------------------------------------------------
 
