@@ -383,13 +383,13 @@ From the main analysis of merge sort for the highest input count, it seems that 
 ```
 Sample Sort
 ```
-![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/Main_S16.png)
-![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/Main_S18.png)
-![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/Main_S20.png)
-![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/Main_S22.png)
-![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/Main_S24.png)
-![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/Main_S26.png)
-![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/bitonicSortImages/Main_S28.png)
+![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/sampleSortImages/Main_S16.png)
+![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/sampleSortImages/Main_S18.png)
+![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/sampleSortImages/Main_S20.png)
+![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/sampleSortImages/Main_S22.png)
+![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/sampleSortImages/Main_S24.png)
+![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/sampleSortImages/Main_S26.png)
+![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/sampleSortImages/Main_S28.png)
 
 The following graphs display the performance of the Sample Sort algorithm across various input sizes and processor counts. However, it should be noted that the algorithm failed to execute correctly for configurations involving 512 and 1024 processors. This issue was likely caused by scaling limitations or communication overheads at those higher processor counts.
 
