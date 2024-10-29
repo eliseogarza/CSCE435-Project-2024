@@ -373,13 +373,10 @@ Unfortunately, due to issues regarding jobs being stuck in queue, graphs were no
 ```
 Sample Sort
 ```
-![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/sampleSortImages/Main_S16.png)
-![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/sampleSortImages/Main_S18.png)
-![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/sampleSortImages/Main_S20.png)
-![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/sampleSortImages/Main_S22.png)
-![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/sampleSortImages/Main_S24.png)
-![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/sampleSortImages/Main_S26.png)
-![alt text](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/sampleSortImages/Main_S28.png)
+![Main Function Average](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/sampleSortImages/main_function_runtime_size_24.png)
+![Strong Scaling Comp_Large Random](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/sampleSortImages/strong_scaling_speedup_comm_Random.png)
+![Weak Scaling Main Random](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/sampleSortImages/weak_scaling_main_Random.png)
+![Weak Scaling Comm Perturbed](https://github.com/eliseogarza/CSCE435-Project-2024/blob/main/sampleSortImages/weak_scaling_comm_Perturbed.png)
 
 The following graphs display the performance of the Sample Sort algorithm across various input sizes and processor counts. However, it should be noted that the algorithm failed to execute correctly for configurations involving 512 and 1024 processors. This issue was likely caused by scaling limitations or communication overheads at those higher processor counts.
 
