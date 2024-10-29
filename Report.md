@@ -368,6 +368,16 @@ Merge Sort
 
 Unfortunately, due to issues regarding jobs being stuck in queue, graphs were not able to be produced for the caliper files calculated for the analysis portion of the project. However, caliper all caliper files implementations combinations, besides processors of 1024, have been created and do exist for the implementation of merge sort. These graphs and proper analysis will be included for the presentation.
 
+UPDATE:
+
+![Weak Scaling Main Sorted](./mergeSortImages/WeakScalingMainSortedMerge.png)
+
+![Main Merge 2^28](./mergeSortImages/mainMerge_2_28.png)
+
+For the Weak Scaling Graph shown above, it is shown that there is some semblance of weak scaling behavior in the implementation of Merge sort created. However, the efficiency of the algorithm seems to be smaller due to the way the algorithm was implemented. Not only that, but the largest input size has a relatively large spike and then followed by an immedeiate drop. This is probably due to the fact that there is significant overhead for large processor counts, thus explaining the large spike occuring.
+
+From the main analysis of merge sort for the highest input count, it seems that the implementation is relatively stable throughout, albeit there seems to be a rather large spike at the very beggining. This could be accounted due to how the merge sort implementation is created, and how the input is handled for small processor counts. Chances are, the resources are not being used properly. Afterwards, everything seems to be fine however.
+
 --------------------------------------------------
 
 ```
