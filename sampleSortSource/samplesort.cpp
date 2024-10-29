@@ -14,11 +14,37 @@
 #define MASTER 0  // Master task identifier
 
 // Helper function to generate random data, now proportional to array size
-void data_init_runtime(std::vector<int>& local_data, int size, int rank, int max_value) {
-    srand(time(0) + rank);  // Seed the random number generator with rank
-    for (int i = 0; i < size; ++i) {
-        local_data.push_back(rand() % max_value);  // Random numbers between 0 and max_value
+void data_init_runtime(std::vector<int>& local_data, int size, int rank, int global_size) {
+    // Set a max value for random numbers proportional to the global size
+    int max_value = global_size / 10;  // Max value is 1/10th of the global array size
+    bool random = true;
+    bool sorted = false;
+    bool reverse = false;
+    bool perturbed = false;
+    
+    if(random){
+        srand(time(0) + rank);  // Seed the random number generator with rank
+        for (int i = 0; i < size; ++i) {
+            local_data.push_back(rand() % max_value);  // Random numbers between 0 and max_value
+        }
+    }else if(sorted){
+        int added = rank * array_size;
+        for (int i = 0; i < size; ++i) {
+            local_data.push_back(i + added);
+        }
+    }else if(reverse){
+        int added = rank * array_size;
+        for (int i = size - 1; i >= 0; --i) {
+            local_data.push_back(i + added);
+        }
+    }else if(perturbed){
+        int added = rank * array_size;
+        for (int i = 0; i < size; ++i) {
+            local_data.push_back(i + added);
+        }
+        std::swap(local_data[0], local_data[1]);
     }
+    
 }
 
 // Helper function for correctness check
@@ -26,6 +52,7 @@ void correctness_check(const std::vector<int>& data) {
     for (size_t i = 1; i < data.size(); ++i) {
         assert(data[i - 1] <= data[i]);  // Ensure sorted order
     }
+    printf("Array sorted");
 }
 
 // Choose splitters from the sorted samples
@@ -59,7 +86,7 @@ int main(int argc, char* argv[]) {
     std::string programming_model = "MPI";
     std::string data_type = "int";
     int size_of_data_type = sizeof(int);
-    std::string input_type = "Random";  // Assumed based on random generation
+    std::string input_type = "Perturbed";  // Assumed based on random generation
     int num_procs = numtasks;
     std::string scalability = "strong";  // Can be updated depending on your testing
     int group_number = 7;  // Assuming group number 1, update as needed
@@ -96,19 +123,15 @@ int main(int argc, char* argv[]) {
 
     // Get array size (2^exponent) and compute the local size
     int exponent = std::stoi(argv[1]);
+    adiak::value("input_size", exponent);
     int global_size = std::pow(2, exponent);  // Size is 2^exponent
     int local_size = global_size / numtasks;
 
-    // Set a max value for random numbers proportional to the global size
-    int max_value = global_size / 10;  // Max value is 1/10th of the global array size
-
     // Local data initialization
-    CALI_MARK_BEGIN("comp");
     CALI_MARK_BEGIN("data_init");
     std::vector<int> local_data;
-    data_init_runtime(local_data, local_size, taskid, max_value);
+    data_init_runtime(local_data, local_size, taskid, global_size);
     CALI_MARK_END("data_init");
-    CALI_MARK_END("comp");
 
     // Local sort
     CALI_MARK_BEGIN("comp");
